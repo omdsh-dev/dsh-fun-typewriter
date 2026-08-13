@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { relative, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const root = process.cwd()
@@ -27,13 +27,21 @@ try {
 
 function sanitizeClient(lib) {
   const needles = [root, root.replaceAll('/', '\\')]
+  const dependencyRoot = resolve(realpathSync(resolve(root, 'node_modules/@deepseek-ai/schemastery')), '../..')
+  const dependencyNeedles = [
+    `${dependencyRoot.replaceAll('\\', '/')}/`,
+    `${relative(root, dependencyRoot).replaceAll('\\', '/')}/`,
+    `${relative(lib, dependencyRoot).replaceAll('\\', '/')}/`,
+  ]
   for (const name of ['client.js', 'client.js.map']) {
     const path = resolve(lib, name)
     if (!existsSync(path)) continue
     let text = readFileSync(path, 'utf8')
     for (const needle of needles) text = text.replaceAll(needle, '<package-root>')
-    if (needles.some(needle => text.includes(needle))) {
-      throw new Error(`${name} still contains the build root after sanitization`)
+    for (const needle of dependencyNeedles) text = text.replaceAll(needle, 'node_modules/')
+    if (needles.some(needle => text.includes(needle))
+      || dependencyNeedles.some(needle => text.includes(needle))) {
+      throw new Error(`${name} still contains a build-machine path after sanitization`)
     }
     writeFileSync(path, text)
   }

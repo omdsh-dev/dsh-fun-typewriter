@@ -1,8 +1,11 @@
-import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync } from 'node:fs'
+import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync, unlinkSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 
 const root = process.cwd()
-const workspaceRoot = resolve(process.env.DSH_WORKSPACE_ROOT ?? '../dsh-core-rc2')
+const installedRoot = process.env.DSH_NODE_MODULES === undefined
+  ? undefined
+  : resolve(process.env.DSH_NODE_MODULES)
+const workspaceRoot = resolve(process.env.DSH_WORKSPACE_ROOT ?? '../dsh-workspace')
 const links = {
   '@deepseek-ai/cordis': 'vendor/cordis',
   '@deepseek-ai/schemastery': 'vendor/schemastery',
@@ -15,12 +18,17 @@ const links = {
   '@deepseek-ai/dsh-client-ui-slots': 'packages/client/ui-slots',
 }
 
-if (!existsSync(workspaceRoot)) {
-  throw new Error(`DSH workspace does not exist: ${workspaceRoot}. Set DSH_WORKSPACE_ROOT to the rc.2 source tree.`)
+if (installedRoot !== undefined && !existsSync(installedRoot)) {
+  throw new Error(`DSH node_modules does not exist: ${installedRoot}. Set DSH_NODE_MODULES to an installed DSH runtime.`)
+}
+if (installedRoot === undefined && !existsSync(workspaceRoot)) {
+  throw new Error(`DSH workspace does not exist: ${workspaceRoot}. Set DSH_WORKSPACE_ROOT to a local DSH workspace.`)
 }
 
 for (const [packageName, workspacePath] of Object.entries(links)) {
-  const target = resolve(workspaceRoot, workspacePath)
+  const target = installedRoot === undefined
+    ? resolve(workspaceRoot, workspacePath)
+    : resolve(installedRoot, packageName)
   const destination = resolve(root, 'node_modules', packageName)
   if (!existsSync(target)) throw new Error(`DSH package source does not exist: ${target}`)
   ensureLink(destination, target)
@@ -32,8 +40,10 @@ function ensureLink(destination, target) {
     if (lstatSync(destination).isSymbolicLink()) {
       const current = resolve(dirname(destination), readlinkSync(destination))
       if (current === target) return
+      unlinkSync(destination)
+    } else {
+      throw new Error(`Refusing to replace existing dependency: ${destination}`)
     }
-    throw new Error(`Refusing to replace existing dependency: ${destination}`)
   }
   symlinkSync(process.platform === 'win32' ? target : relative(dirname(destination), target), destination,
     process.platform === 'win32' ? 'junction' : 'dir')
