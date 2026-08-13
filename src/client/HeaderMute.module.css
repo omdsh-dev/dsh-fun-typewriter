@@ -1,0 +1,25 @@
+/* Header action button matching the resident action chrome (see ui-task). */
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+}
+
+.trigger:hover,
+.trigger:focus-visible {
+  color: var(--dsw-alias-label-secondary);
+  background: var(--dsw-alias-fill-l2);
+}
+
+.trigger[aria-pressed='true'] {
+  color: var(--dsw-alias-label-quaternary);
+}

@@ -1,0 +1,5 @@
+# Profile Bundle entry. dsh plugin add applies this row once and discovers the
+# browser half through package.json#dsh.client.
+- insert:
+    - id: fun-typewriter
+      name: '@deepseek-ai/dsh-fun-typewriter'

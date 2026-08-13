@@ -1,0 +1,7 @@
+<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>sound on</title>
+  <!-- Canonical source mirrored inline in src/client/icons.tsx (the client bundler has no SVG loader). -->
+  <path d="M2 6.2C2 6.09 2.09 6 2.2 6h2.06c.06 0 .12-.024.163-.066l2.368-2.564a.3.3 0 0 1 .51.212v8.836a.3.3 0 0 1-.51.212L4.423 10.066A.23.23 0 0 0 4.26 10H2.2a.2.2 0 0 1-.2-.2V6.2Z" fill="currentColor"/>
+  <path d="M9.6 5.4a2.6 2.6 0 0 1 0 5.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M11.2 3.8a5 5 0 0 1 0 8.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
