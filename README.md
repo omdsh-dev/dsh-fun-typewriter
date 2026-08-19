@@ -1,5 +1,7 @@
 # @deepseek-ai/dsh-fun-typewriter
 
+**Author / Maintainer:** [@Zacklinkk](https://github.com/Zacklinkk)
+
 为 DSH Web 增加打字机/机械键盘氛围音：助手流式输出敲击、发送回弹、完成提示、
 错误低鸣、输入按键音，以及会话头部静音按钮和完整设置页。音效全部由 WebAudio
 实时合成，不包含音频文件，也不访问任何外部服务。
